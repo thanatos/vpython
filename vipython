@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+MYDIR="$(dirname "`perl -e 'use Cwd; print Cwd::realpath($ARGV[1])' '' "${BASH_SOURCE[0]}"`")"
+source "$MYDIR/venv_lib"
+
+REQUIREMENTS_DIR="`find_requirements`"
+if [[ $? != 0 ]]; then exit 1; fi
+
+ensure_env "$REQUIREMENTS_DIR" || exit 1
+if [[ ! -e "$REQUIREMENTS_DIR"/env/bin/ipython ]]; then
+	"$REQUIREMENTS_DIR"/env/bin/pip install ipython || exit 1
+fi
+run_in_env ipython "$@"

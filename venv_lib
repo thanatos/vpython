@@ -1,0 +1,50 @@
+# vim: filetype=sh
+set -e
+
+function find_requirements() {
+	(
+		while true; do
+			if [[ -f requirements.txt ]]; then
+				pwd
+				exit 0
+			fi
+
+			if [[ "`pwd`" == "/" ]]; then
+				printf "Reached /; couldn't find virtualenv.\n" >&2
+				exit 1
+			fi
+
+			cd ..
+		done
+	)
+}
+
+
+function ensure_env() {
+	# Usage:
+	#   ensure_env REQUIREMENTS_DIR
+	# If "env" doesn't exist in $REQUIREMENTS_DIR, creates it, and sources
+	# requirements.
+	local REQUIREMENTS_DIR="$1"
+	if [[ ! -d "$REQUIREMENTS_DIR"/env ]]; then
+		if [[ ! -e "$REQUIREMENTS_DIR"/requirements.txt ]]; then
+			printf 'Error: No requirements.txt found in "%s".\nAborting.\n' "$REQUIREMENTS_DIR" >&2
+			return 1
+		fi
+		virtualenv "$REQUIREMENTS_DIR"/env || return 1
+		"$REQUIREMENTS_DIR"/env/bin/pip install --requirement "$REQUIREMENTS_DIR"/requirements.txt || return 1
+	fi
+}
+
+
+function run_in_env() {
+	local REQUIREMENTS_DIR="`find_requirements`"
+	if [[ $? != 0 ]]; then exit 1; fi
+
+	ensure_env "$REQUIREMENTS_DIR"
+
+	local EXE="$1"
+	shift
+
+	exec "$REQUIREMENTS_DIR"/env/bin/"$EXE" "$@"
+}

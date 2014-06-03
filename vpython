@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+MYDIR="$(dirname "`perl -e 'use Cwd; print Cwd::realpath($ARGV[1])' '' "${BASH_SOURCE[0]}"`")"
+source "$MYDIR/venv_lib"
+run_in_env python "$@"
