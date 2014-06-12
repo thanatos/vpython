@@ -33,5 +33,5 @@ Why?
 ====
 
 I prefer to not source virtualenvs. Aside from feeling wrong, it messes up
-Powerline in vim for me. It also prevents ``cd``-ing to a different env, and
-forgetting to ``deactivate``.
+Powerline in vim for me. It also prevents you from ``cd``-ing out of the env,
+and forgetting to call ``deactivate``.
