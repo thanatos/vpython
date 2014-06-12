@@ -25,7 +25,7 @@ virtualenv if needed and if it does, ``pip install`` your requirements.txt.
 if needed.)
 
 ``venv`` runs arbitrary executables from the virtualenv's ``bin``, so ``venv
-nosetests`` will run you're environments ``nosetests`` binary. (Since this
+nosetests`` will run your environment's ``nosetests`` binary. (Since this
 works on arbitrary binaries, it can't auto-install PyPI packages.)
 
 
