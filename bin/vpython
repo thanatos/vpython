@@ -1,7 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-set -e
+from os import path as _path
+import sys as _sys
 
-MYDIR="$(dirname "`perl -e 'use Cwd; print Cwd::realpath($ARGV[1])' '' "${BASH_SOURCE[0]}"`")"
-source "$MYDIR/venv_lib"
-run_in_env python "$@"
+
+# See if we can import the one relative to us:
+_where_vpython_should_be = _path.abspath(
+    _path.join(_path.dirname(__file__), '..')
+)
+if _path.exists(_path.join(_where_vpython_should_be, 'vpython')):
+    # Found it! Import it:
+    _sys.path = [_where_vpython_should_be] + _sys.path
+
+from vpython import venv
+
+
+venv.find_and_run('python', _sys.argv[1:])

@@ -1,15 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-set -e
+from os import path as _path
+import sys as _sys
 
-MYDIR="$(dirname "`perl -e 'use Cwd; print Cwd::realpath($ARGV[1])' '' "${BASH_SOURCE[0]}"`")"
-source "$MYDIR/venv_lib"
 
-REQUIREMENTS_DIR="`find_requirements`"
-if [[ $? != 0 ]]; then exit 1; fi
+# See if we can import the one relative to us:
+_where_vpython_should_be = _path.abspath(
+    _path.join(_path.dirname(__file__), '..')
+)
+if _path.exists(_path.join(_where_vpython_should_be, 'vpython')):
+    # Found it! Import it:
+    _sys.path = [_where_vpython_should_be] + _sys.path
 
-ensure_env "$REQUIREMENTS_DIR" || exit 1
-if [[ ! -e "$REQUIREMENTS_DIR"/env/bin/ipython ]]; then
-	"$REQUIREMENTS_DIR"/env/bin/pip install ipython || exit 1
-fi
-run_in_env ipython "$@"
+from vpython import venv
+from vpython import venv_util
+
+
+venv_path = venv.find_venv()
+if not _path.exists(_path.join(venv_path, 'bin', 'ipython')):
+    venv_util.run_in_venv(venv_path, 'pip', ['install', 'ipython'])
+venv_util.exec_in_venv(venv_path, 'ipython', _sys.argv[1:])
