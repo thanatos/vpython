@@ -5,6 +5,7 @@ from . import venv_util as _venv_util
 
 
 _DEFAULT_ENV_NAMES = ('env', 'venv')
+_VENV_NAMES_ENV_KEY = 'VPYTHON_VIRTUALENV_NAMES'
 
 
 def find_venv():
@@ -14,7 +15,11 @@ def find_venv():
         _sys.stderr.write('Failed to find a "requirements.txt".\n')
         _sys.exit(1)
 
-    names_to_try = _DEFAULT_ENV_NAMES
+    if _VENV_NAMES_ENV_KEY in _os.environ:
+        names_to_try = ':'.split(_os.environ[_VENV_NAMES_ENV_KEY])
+    else:
+        names_to_try = _DEFAULT_ENV_NAMES
+
     for name in names_to_try:
         venv_path = _path.join(requirements_path, name)
         # If it looks like a venv…
